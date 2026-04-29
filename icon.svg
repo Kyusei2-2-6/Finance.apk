@@ -1,6 +1,1 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512">
-  <rect width="512" height="512" rx="120" fill="#111827"/>
-  <rect x="72" y="72" width="368" height="368" rx="100" fill="#37d67a"/>
-  <rect x="126" y="126" width="260" height="260" rx="72" fill="#5cc8ff"/>
-  <text x="256" y="326" text-anchor="middle" font-size="210" font-weight="900" font-family="Arial, sans-serif" fill="#06111f">₣</text>
-</svg>
+<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text x='50' y='60' font-size='50' text-anchor='middle'>$</text></svg>
