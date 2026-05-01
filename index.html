@@ -48,7 +48,7 @@
     .modal{position:fixed;inset:0;background:rgba(0,0,0,.58);backdrop-filter:blur(8px);z-index:60;display:none;padding:14px;overflow:auto}
     .modal.show{display:flex;align-items:flex-end}.sheet{width:100%;max-width:640px;margin:auto;background:#0f172a;border:1px solid var(--line);border-radius:28px;padding:16px;box-shadow:0 30px 80px rgba(0,0,0,.42);animation:sheet .24s ease}
     @keyframes sheet{from{transform:translateY(28px);opacity:.6}to{transform:none;opacity:1}}
-    .sheet-head{display:flex;align-items:center;justify-content:space-between;margin-bottom:8px}.sheet h2{margin:0}.hidden{display:none!important}.hint{color:var(--muted);font-size:13px;line-height:1.45}
+    .sheet-head{display:flex;align-items:center;justify-content:space-between;margin-bottom:8px}.sheet h2{margin:0}.hidden{display:none!important}.hint{color:var(--muted);font-size:13px;line-height:1.45}.custom-mini{margin-top:8px;background:rgba(56,189,248,.08)!important;border-color:rgba(56,189,248,.25)!important}.mini-note{font-size:12px;color:#7dd3fc;margin-top:6px;font-weight:800}
     .insight{background:linear-gradient(135deg,rgba(37,99,235,.12),rgba(34,197,94,.10));border:1px solid var(--line);border-radius:18px;padding:12px;margin-top:10px}
     @media(min-width:760px){.summary{grid-template-columns:1.2fr .8fr}.wallets{grid-template-columns:repeat(3,1fr)}.fab{left:50%;right:auto;transform:translateX(-50%);width:420px}.modal.show{align-items:center}}
   </style>
@@ -72,7 +72,7 @@
     </div>
   </section>
 
-  <section class="card"><div style="display:flex;justify-content:space-between;align-items:center;gap:10px;margin-bottom:10px"><h2 style="margin:0">Dompet</h2><button class="ghost" onclick="openAudit()">Audit</button></div><div class="wallets" id="walletList"></div></section>
+  <section class="card"><div style="display:flex;justify-content:space-between;align-items:center;gap:10px;margin-bottom:10px"><h2 style="margin:0">Dompet</h2><div style="display:flex;gap:8px"><button class="ghost" onclick="openManage()">Kelola</button><button class="ghost" onclick="openAudit()">Audit</button></div></div><div class="wallets" id="walletList"></div></section>
 
   <section class="card">
     <h2 style="margin:0 0 10px">Riwayat</h2>
@@ -88,8 +88,10 @@
   <div class="sheet-head"><h2>Input Transaksi</h2><button class="ghost" onclick="closeTx()">Tutup</button></div>
   <label>Tanggal</label><input type="date" id="date">
   <label>Jenis</label><select id="type" onchange="updateForm()"><option value="income">Pemasukan</option><option value="expense">Pengeluaran</option><option value="debt_add">Berhutang</option><option value="debt_pay">Bayar Hutang</option><option value="transfer">Transfer Antar Dompet</option><option value="adjust_balance">Adjustment Saldo</option><option value="adjust_debt">Adjustment Hutang</option></select>
-  <div id="walletFromWrap"><label>Dari Dompet</label><select id="walletFrom"></select></div><div id="walletToWrap"><label>Ke Dompet</label><select id="walletTo"></select></div><div id="debtWrap"><label>Akun Hutang</label><select id="debtAccount"></select></div>
-  <div id="categoryWrap"><label>Kategori</label><select id="category" onchange="customCheck()"></select><input class="hidden" id="categoryCustom" placeholder="Tulis kategori lainnya..."></div>
+  <div id="walletFromWrap"><label>Dari Dompet</label><select id="walletFrom" onchange="customCheck()"></select><input class="hidden custom-mini" id="walletFromCustom" placeholder="Nama dompet asal lainnya..."></div>
+  <div id="walletToWrap"><label>Ke Dompet</label><select id="walletTo" onchange="customCheck()"></select><input class="hidden custom-mini" id="walletToCustom" placeholder="Nama dompet tujuan lainnya..."></div>
+  <div id="debtWrap"><label>Akun Hutang</label><select id="debtAccount" onchange="customCheck()"></select><input class="hidden custom-mini" id="debtCustom" placeholder="Nama akun hutang lainnya..."></div>
+  <div id="categoryWrap"><label>Kategori</label><select id="category" onchange="customCheck()"></select><input class="hidden custom-mini" id="categoryCustom" placeholder="Tulis kategori lainnya..."><div class="mini-note hidden" id="customHint">Opsi baru otomatis tersimpan setelah transaksi disimpan.</div></div>
   <label>Nominal</label><input id="amount" inputmode="numeric" placeholder="Contoh: 1.000.000" oninput="moneyInput(this)">
   <label>Catatan</label><textarea id="note" placeholder="Catatan singkat..."></textarea>
   <button class="primary" style="width:100%;margin-top:12px" onclick="addTx()">Simpan Transaksi</button>
@@ -103,6 +105,15 @@
   <button class="primary" style="width:100%;margin-top:12px" onclick="saveAudit()">Simpan Adjustment</button>
 </div></div>
 
+<div class="modal" id="manageModal"><div class="sheet">
+  <div class="sheet-head"><h2>Kelola Dompet & Hutang</h2><button class="ghost" onclick="closeManage()">Tutup</button></div>
+  <label>Tambah Dompet</label><div style="display:grid;grid-template-columns:1fr auto;gap:8px"><input id="newWallet" placeholder="Contoh: OVO, SeaBank, Jago"><button class="primary" onclick="addWallet()">Tambah</button></div>
+  <div id="walletManageList" style="margin:10px 0 16px"></div>
+  <label>Tambah Akun Hutang</label><div style="display:grid;grid-template-columns:1fr auto;gap:8px"><input id="newDebt" placeholder="Contoh: Kredivo, Akulaku"><button class="primary" onclick="addDebt()">Tambah</button></div>
+  <div id="debtManageList" style="margin-top:10px"></div>
+  <p class="hint" style="margin-top:12px">Dompet/akun hutang yang sudah dipakai transaksi tidak bisa dihapus agar data tidak rusak.</p>
+</div></div>
+
 <div class="modal" id="backupModal"><div class="sheet">
   <div class="sheet-head"><h2>Backup Data</h2><button class="ghost" onclick="closeBackup()">Tutup</button></div>
   <p class="hint">Backup rutin biar data aman kalau browser/HP dibersihkan.</p>
@@ -112,7 +123,7 @@
 </div></div>
 
 <script>
-const APP_VERSION=4, KEY='finance_app_v4', OLD_KEYS=['finance_app_v3'];
+const APP_VERSION=5, KEY='finance_app_v5', OLD_KEYS=['finance_app_v4','finance_app_v3'];
 const walletsDefault=['Cash','BCA','DANA','GoPay','ShopeePay'];
 const debtsDefault=['ShopeePayLater','SPinjam','GoPayPinjam','Cash','Lainnya'];
 const cats=['Gaji','Makan','Transport','Internet','Jajan','Game','Belanja','Kesehatan','Lainnya'];
@@ -185,21 +196,52 @@ function icon(k){return k.includes('BCA')?'🏦':k.includes('DANA')?'💙':k.inc
 function loadMore(){visible+=10;renderList()}
 function resetList(){visible=10;renderList()}
 function opts(el,arr){el.innerHTML=arr.map(x=>`<option>${x}</option>`).join('')+'<option>Lainnya</option>'}
-function openTx(){vibrate();date.value=today();type.value='income';opts(walletFrom,data.wallets);opts(walletTo,data.wallets);opts(debtAccount,data.debts);opts(category,cats);walletFrom.value='Cash';walletTo.value='Cash';debtAccount.value='Cash';category.value='Gaji';categoryCustom.value='';categoryCustom.classList.add('hidden');amount.value='';note.value='';updateForm();txModal.classList.add('show')}
+function openTx(){
+  vibrate();date.value=today();type.value='income';
+  opts(walletFrom,data.wallets);opts(walletTo,data.wallets);opts(debtAccount,data.debts);opts(category,cats);
+  walletFrom.value='Cash';walletTo.value='Cash';debtAccount.value='Cash';category.value='Gaji';
+  walletFromCustom.value='';walletToCustom.value='';debtCustom.value='';categoryCustom.value='';
+  amount.value='';note.value='';updateForm();customCheck();txModal.classList.add('show')
+}
 function closeTx(){txModal.classList.remove('show')}
-function updateForm(){let t=type.value;walletFromWrap.classList.toggle('hidden',!['expense','debt_pay','transfer'].includes(t));walletToWrap.classList.toggle('hidden',!['income','debt_add','transfer','adjust_balance'].includes(t));debtWrap.classList.toggle('hidden',!['debt_add','debt_pay','adjust_debt'].includes(t));categoryWrap.classList.toggle('hidden',['transfer','adjust_balance','adjust_debt'].includes(t))}
-function customCheck(){categoryCustom.classList.toggle('hidden',category.value!=='Lainnya')}
+function updateForm(){let t=type.value;walletFromWrap.classList.toggle('hidden',!['expense','debt_pay','transfer'].includes(t));walletToWrap.classList.toggle('hidden',!['income','debt_add','transfer','adjust_balance'].includes(t));debtWrap.classList.toggle('hidden',!['debt_add','debt_pay','adjust_debt'].includes(t));categoryWrap.classList.toggle('hidden',['transfer','adjust_balance','adjust_debt'].includes(t));customCheck()}
+function customCheck(){
+  const sf = walletFrom.value==='Lainnya' && !walletFromWrap.classList.contains('hidden');
+  const st = walletTo.value==='Lainnya' && !walletToWrap.classList.contains('hidden');
+  const sd = debtAccount.value==='Lainnya' && !debtWrap.classList.contains('hidden');
+  const sc = category.value==='Lainnya' && !categoryWrap.classList.contains('hidden');
+  walletFromCustom.classList.toggle('hidden', !sf);
+  walletToCustom.classList.toggle('hidden', !st);
+  debtCustom.classList.toggle('hidden', !sd);
+  categoryCustom.classList.toggle('hidden', !sc);
+  customHint.classList.toggle('hidden', !(sf||st||sd||sc));
+}
 function addMaybe(arr,name){if(name&&name!=='Lainnya'&&!arr.includes(name))arr.push(name)}
 function addTx(){
   let t=type.value,n=amount(document.getElementById('amount').value);if(!n){alert('Nominal wajib diisi.');return}
-  let cat=category.value==='Lainnya'?(categoryCustom.value.trim()||'Lainnya'):category.value;let wf=walletFrom.value,wt=walletTo.value,da=debtAccount.value;
-  if(['income','debt_add','transfer','adjust_balance'].includes(t)&&wt==='Lainnya'){wt=prompt('Nama dompet?')||'Lainnya';addMaybe(data.wallets,wt)}
-  if(['expense','debt_pay','transfer'].includes(t)&&wf==='Lainnya'){wf=prompt('Nama dompet?')||'Lainnya';addMaybe(data.wallets,wf)}
-  if(['debt_add','debt_pay','adjust_debt'].includes(t)&&da==='Lainnya'){da=prompt('Nama akun hutang?')||'Lainnya';addMaybe(data.debts,da)}
+  let cat=category.value==='Lainnya'?(categoryCustom.value.trim()||'Lainnya'):category.value;
+  let wf=walletFrom.value==='Lainnya'?(walletFromCustom.value.trim()||'Lainnya'):walletFrom.value;
+  let wt=walletTo.value==='Lainnya'?(walletToCustom.value.trim()||'Lainnya'):walletTo.value;
+  let da=debtAccount.value==='Lainnya'?(debtCustom.value.trim()||'Lainnya'):debtAccount.value;
+  if(['income','debt_add','transfer','adjust_balance'].includes(t)&&wt==='Lainnya'){alert('Isi nama dompet tujuan lainnya dulu.');return}
+  if(['expense','debt_pay','transfer'].includes(t)&&wf==='Lainnya'){alert('Isi nama dompet asal lainnya dulu.');return}
+  if(['debt_add','debt_pay','adjust_debt'].includes(t)&&da==='Lainnya'){alert('Isi nama akun hutang lainnya dulu.');return}
+  if(category.value==='Lainnya'&&cat==='Lainnya'){alert('Isi nama kategori lainnya dulu.');return}
+  addMaybe(data.wallets,wf);addMaybe(data.wallets,wt);addMaybe(data.debts,da);
   if(t==='transfer'&&wf===wt){alert('Dompet asal dan tujuan tidak boleh sama.');return}
-  data.tx.push({id:Date.now(),date:date.value||today(),type:t,amount:n,note:note.value.trim(),category:cat,walletFrom:wf,walletTo:wt,debtAccount:da});save();closeTx();vibrate();render()
+  data.tx.push({id:Date.now(),date:date.value||today(),type:t,amount:n,note:note.value.trim(),category:cat,walletFrom:wf,walletTo:wt,debtAccount:da});
+  save();closeTx();vibrate();render()
 }
 function delTx(id){if(confirm('Hapus transaksi ini?')){data.tx=data.tx.filter(t=>t.id!==id);save();render()}}
+function openManage(){renderManage();manageModal.classList.add('show')}
+function closeManage(){manageModal.classList.remove('show')}
+function escClick(name){return String(name).replace(/\\/g,'\\\\').replace(/'/g,"\\'")}
+function pill(name,type){const fn=type==='wallet'?'removeWallet':'removeDebt', sym=type==='wallet'?icon(name):'💳';return `<span style="display:inline-flex;align-items:center;gap:6px;margin:4px;padding:7px 9px;border:1px solid var(--line);border-radius:999px;background:rgba(255,255,255,.06);font-weight:900">${sym} ${name}<button class="danger" style="padding:4px 7px;border-radius:999px;font-size:11px" onclick="${fn}('${escClick(name)}')">×</button></span>`}
+function renderManage(){walletManageList.innerHTML=data.wallets.map(w=>pill(w,'wallet')).join('');debtManageList.innerHTML=data.debts.map(d=>pill(d,'debt')).join('')}
+function addWallet(){const name=newWallet.value.trim();if(!name){alert('Nama dompet wajib diisi.');return}if(data.wallets.includes(name)){alert('Dompet sudah ada.');return}data.wallets.push(name);newWallet.value='';save();render();renderManage()}
+function addDebt(){const name=newDebt.value.trim();if(!name){alert('Nama akun hutang wajib diisi.');return}if(data.debts.includes(name)){alert('Akun hutang sudah ada.');return}data.debts.push(name);newDebt.value='';save();render();renderManage()}
+function removeWallet(name){const used=data.tx.some(t=>t.walletFrom===name||t.walletTo===name);if(used){alert('Dompet ini sudah dipakai transaksi, jadi tidak bisa dihapus agar data tidak rusak.');return}if(!confirm('Hapus dompet '+name+'?'))return;data.wallets=data.wallets.filter(w=>w!==name);save();render();renderManage()}
+function removeDebt(name){const used=data.tx.some(t=>t.debtAccount===name);if(used){alert('Akun hutang ini sudah dipakai transaksi, jadi tidak bisa dihapus agar data tidak rusak.');return}if(!confirm('Hapus akun hutang '+name+'?'))return;data.debts=data.debts.filter(d=>d!==name);save();render();renderManage()}
 function openAudit(){opts(auditAccount,data.wallets);updateAudit();auditModal.classList.add('show')}
 function closeAudit(){auditModal.classList.remove('show')}
 function updateAudit(){opts(auditAccount,auditType.value==='wallet'?data.wallets:data.debts)}
